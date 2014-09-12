@@ -1,29 +1,64 @@
-// some fake model layer or data from somewhere
-var Users = {
-  findAll: function() {
-    return [
-      'jack@jackfranklin.net',
-      'jack@gocardless.com'
-    ];
+var assert = function(x, desc) {
+  if(!x) {
+    console.error('FAIL', desc);
   }
+}
+
+var canSubscribe = function(userId, blog) {
+  if(blog.private === true) return false;
+  if(blog.creator === userId) return false;
+  if(blog.admins.indexOf(userId) > -1) return false;
+  if(blog.subscribers.indexOf(userId) > -1) return false;
+  return true;
 };
 
-var EmailSender = function(users) {
-  this.users = users;
-};
+// a user is able to subscribe to a blog unless:
+// - the user created that blog
+// - the user has been added as an admin to that blog
+// - the blog is private
+// - the user has already subscribed
 
-EmailSender.prototype.send = function() {
-  this.users.forEach(function(user) {
-    this.sendTo(user);
-  }, this);
-};
+var canSubscribeToPrivate = canSubscribe('abc', {
+  creator: 'def',
+  admins: [],
+  private: true,
+  subscribers: []
+});
 
-EmailSender.prototype.sendTo = function(email) {
-  console.log('SENT MAIL TO', email);
-  // in here is where the email gets sent
-};
+assert(canSubscribeToPrivate === false, "canSubscribeToPrivate");
 
-var users = Users.findAll();
-new EmailSender(users).send();
+var canSubscribeToOwn = canSubscribe('abc', {
+  creator: 'abc',
+  admins: [],
+  private: false,
+  subscribers: []
+});
 
+assert(canSubscribeToOwn === false, "canSubscribeToOwn");
 
+var canSubscribeToAdmin = canSubscribe('abc', {
+  creator: 'def',
+  admins: ['abc'],
+  private: false,
+  subscribers: []
+});
+
+assert(canSubscribeToAdmin === false, "canSubscribeToAdmin");
+
+var canSubscribeToSubscribed = canSubscribe('abc', {
+  creator: 'def',
+  admins: [],
+  private: false,
+  subscribers: ['abc']
+});
+
+assert(canSubscribeToSubscribed === false, "canSubscribeToSubscribed");
+
+var canSubscribeOtherwise = canSubscribe('abc', {
+  creator: 'def',
+  admins: [],
+  private: false,
+  subscribers: []
+});
+
+assert(canSubscribeOtherwise === true, 'canSubscribeOtherwise');
