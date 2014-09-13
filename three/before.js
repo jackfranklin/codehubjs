@@ -1,17 +1,16 @@
-// some fake model layer or data from somewhere
-var Users = {
-  findAll: function() {
-    return [
-      'jack@jackfranklin.net',
-      'jack@gocardless.com'
-    ];
+// fake database thing
+// this could easily be an AJAX req or something similar
+var database = {
+  users: {
+    findAll: function() {
+      return ['jack@jackfranklin.net', 'jack@gocardless.com']
+    }
   }
 };
-
 var EmailSender = function() {};
 
 EmailSender.prototype.send = function() {
-  var users = Users.findAll();
+  var users = database.users.findAll();
   users.forEach(function(user) {
     this.sendTo(user);
   }, this);

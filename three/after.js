@@ -1,6 +1,7 @@
-// some fake model layer or data from somewhere
+// abstract the database bit away into its own service
 var Users = {
   findAll: function() {
+    // pretend we hit the DB in here
     return [
       'jack@jackfranklin.net',
       'jack@gocardless.com'
